@@ -46,9 +46,14 @@ function countDown() {
 }, 1000);
 }
 
+$('#submit').click(() => {
 
+	var username = $('#username').val();
+	$.post( "http://localhost:1000/username", { username: username } );
+	$('#username').val('');
 
-window.onclick
+});
+
 
 window.onload = function() {
 	initMap();
