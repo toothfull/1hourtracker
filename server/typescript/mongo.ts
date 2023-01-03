@@ -1,6 +1,7 @@
 import { MongoClient } from 'mongodb'
+import { srv, userName, password, url, atlas } from './credentials'
 
-const uri = 'mongodb+srv://kylesaffery:luigi123@cluster0.pgezcni.mongodb.net/test'
+const uri = `${srv}://${userName}:${password}@${url}/${atlas}`
 
 export const client =	new MongoClient(uri)
 

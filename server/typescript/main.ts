@@ -3,7 +3,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import { username, connect } from './mongo'
 
-const app = express()
+export const app = express()
 const port = 1000
 
 
@@ -18,7 +18,7 @@ app.post('/username', async (req, res) => {
 	res.send('Recieved!')
 })
 
-app.listen(port, async () => {
+export const webServer = app.listen(port, async () => {
 	console.log(`Example app listening at http://localhost:${port}`)
 	await connect()
 })
