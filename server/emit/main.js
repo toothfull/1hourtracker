@@ -17,6 +17,7 @@ exports.webServer = exports.app = void 0;
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const mongo_1 = require("./mongo");
+const validation_1 = require("./validation");
 exports.app = (0, express_1.default)();
 const port = 1000;
 // parse application/x-www-form-urlencoded
@@ -24,8 +25,16 @@ exports.app.use(body_parser_1.default.urlencoded({ extended: false }));
 // parse application/json
 exports.app.use(body_parser_1.default.json());
 exports.app.post('/username', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, mongo_1.username)(req.body.username);
-    res.send('Recieved!');
+    const usernameRecieved = req.body.username;
+    if ((0, validation_1.validation)(usernameRecieved)) {
+        yield (0, mongo_1.username)(usernameRecieved);
+        res.header('Content-Type', 'text/plain');
+        res.send('Recieved and passed checks!');
+    }
+    else {
+        res.header('Content-Type', 'text/plain');
+        res.send('Username failed checks!');
+    }
 }));
 exports.webServer = exports.app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`Example app listening at http://localhost:${port}`);

@@ -48,12 +48,20 @@ function countDown() {
 
 $('#submit').click(() => {
 
-	var username = $('#username').val();
-	$.post( "http://localhost:1000/username", { username: username } );
-	$('#username').val('');
+	var username = validation($('#username').val());
+
+	if (username == false) {
+		alert('Username is not valid');
+		$('#username').val('');
+	}
+	else {
+		$.post( "http://localhost:1000/username", { username: username }, function (data){
+			alert(data);
+		});
+		$('#username').val('');
+	}
 
 });
-
 
 window.onload = function() {
 	initMap();

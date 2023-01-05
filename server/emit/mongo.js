@@ -9,9 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.username = exports.connect = exports.client = void 0;
+exports.findUserByName = exports.findUserByID = exports.username = exports.connect = exports.client = void 0;
 const mongodb_1 = require("mongodb");
-const uri = 'mongodb+srv://kylesaffery:luigi123@cluster0.pgezcni.mongodb.net/test';
+const credentials_1 = require("./credentials");
+const uri = `${credentials_1.srv}://${credentials_1.userName}:${credentials_1.password}@${credentials_1.url}/${credentials_1.atlas}`;
 exports.client = new mongodb_1.MongoClient(uri);
 function connect() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -36,6 +37,7 @@ function username(currentUsername) {
                 username: currentUsername
             });
             console.log(`A document was inserted with the _id: ${result.insertedId}`);
+            return result.insertedId;
         }
         finally {
             yield exports.client.close();
@@ -43,3 +45,45 @@ function username(currentUsername) {
     });
 }
 exports.username = username;
+function findUserByID(usernameID) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            yield exports.client.connect();
+            const database = exports.client.db('Location_Storage');
+            const userCollection = database.collection('User');
+            const result = yield userCollection.findOne({ _id: usernameID });
+            if (result == null) {
+                console.log('No document matches the provided query.');
+                return false;
+            }
+            else {
+                return result.username;
+            }
+        }
+        finally {
+            yield exports.client.close();
+        }
+    });
+}
+exports.findUserByID = findUserByID;
+function findUserByName(username) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            yield exports.client.connect();
+            const database = exports.client.db('Location_Storage');
+            const userCollection = database.collection('User');
+            const result = yield userCollection.findOne({ username: username });
+            if (result == null) {
+                console.log('No document matches the provided query.');
+                return false;
+            }
+            else {
+                return result.username;
+            }
+        }
+        finally {
+            yield exports.client.close();
+        }
+    });
+}
+exports.findUserByName = findUserByName;
