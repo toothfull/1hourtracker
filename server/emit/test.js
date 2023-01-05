@@ -26,12 +26,15 @@ suite('Integration Testing', () => {
     test('Username validation', () => {
         chai_1.default.request(main_1.app).post('/username').send({ username: 'kyle' }).end((_, Response) => {
             chai_1.default.assert.equal(Response.text, 'Recieved and passed checks!', 'Correct username failed validation');
+            (0, mongo_1.deleteUser)('kyle');
         });
         chai_1.default.request(main_1.app).post('/username').send({ username: 'kyle_saffery' }).end((_, Response) => {
             chai_1.default.assert.equal(Response.text, 'Recieved and passed checks!', 'Correct username failed validation');
+            (0, mongo_1.deleteUser)('kyle_saffery');
         });
         chai_1.default.request(main_1.app).post('/username').send({ username: 'kyle123' }).end((_, Response) => {
             chai_1.default.assert.equal(Response.text, 'Recieved and passed checks!', 'Correct username failed validation');
+            (0, mongo_1.deleteUser)('kyle123');
         });
         chai_1.default.request(main_1.app).post('/username').send({ username: 'k' }).end((_, Response) => {
             chai_1.default.assert.equal(Response.text, 'Username failed checks!', 'Incorrect username passed validation');
@@ -44,12 +47,14 @@ suite('Integration Testing', () => {
         });
     });
     test('Username is inseted into mongo', () => {
-        chai_1.default.request(main_1.app).post('/username').send({ username: 'insertTest' }).end((_, Response) => __awaiter(void 0, void 0, void 0, function* () {
+        chai_1.default.request(main_1.app).post('/username').send({ username: 'insertTest' }).end(() => __awaiter(void 0, void 0, void 0, function* () {
             const result = yield (0, mongo_1.findUserByName)('insertTest');
             chai_1.default.assert.equal(result, 'insertTest', 'Username not inserted into mongo');
+            (0, mongo_1.deleteUser)('insertTest');
         }));
     });
     suiteTeardown(() => {
         main_1.webServer.close();
+        (0, mongo_1.mongoDisconnect)();
     });
 });

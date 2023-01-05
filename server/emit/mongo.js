@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findUserByName = exports.findUserByID = exports.username = exports.connect = exports.client = void 0;
+exports.mongoDisconnect = exports.deleteUser = exports.findUserByName = exports.findUserByID = exports.username = exports.connect = exports.client = void 0;
 const mongodb_1 = require("mongodb");
 const credentials_1 = require("./credentials");
 const uri = `${credentials_1.srv}://${credentials_1.userName}:${credentials_1.password}@${credentials_1.url}/${credentials_1.atlas}`;
@@ -21,7 +21,7 @@ function connect() {
             yield exports.client.db('admin').command({ ping: 1 });
             console.log('Connected successfully to server');
         }
-        finally {
+        catch (_a) {
             yield exports.client.close();
         }
     });
@@ -29,61 +29,59 @@ function connect() {
 exports.connect = connect;
 function username(currentUsername) {
     return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield exports.client.connect();
-            const database = exports.client.db('Location_Storage');
-            const userCollection = database.collection('User');
-            const result = yield userCollection.insertOne({
-                username: currentUsername
-            });
-            console.log(`A document was inserted with the _id: ${result.insertedId}`);
-            return result.insertedId;
-        }
-        finally {
-            yield exports.client.close();
-        }
+        const database = exports.client.db('Location_Storage');
+        const userCollection = database.collection('User');
+        const result = yield userCollection.insertOne({
+            username: currentUsername
+        });
+        console.log(`A document was inserted with the _id: ${result.insertedId}`);
+        return result.insertedId;
     });
 }
 exports.username = username;
 function findUserByID(usernameID) {
     return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield exports.client.connect();
-            const database = exports.client.db('Location_Storage');
-            const userCollection = database.collection('User');
-            const result = yield userCollection.findOne({ _id: usernameID });
-            if (result == null) {
-                console.log('No document matches the provided query.');
-                return false;
-            }
-            else {
-                return result.username;
-            }
+        const database = exports.client.db('Location_Storage');
+        const userCollection = database.collection('User');
+        const result = yield userCollection.findOne({ _id: usernameID });
+        if (result == null) {
+            console.log('No document matches the provided query.');
+            return false;
         }
-        finally {
-            yield exports.client.close();
+        else {
+            return result.username;
         }
     });
 }
 exports.findUserByID = findUserByID;
 function findUserByName(username) {
     return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield exports.client.connect();
-            const database = exports.client.db('Location_Storage');
-            const userCollection = database.collection('User');
-            const result = yield userCollection.findOne({ username: username });
-            if (result == null) {
-                console.log('No document matches the provided query.');
-                return false;
-            }
-            else {
-                return result.username;
-            }
+        const database = exports.client.db('Location_Storage');
+        const userCollection = database.collection('User');
+        const result = yield userCollection.findOne({ username: username });
+        if (result == null) {
+            console.log('No document matches the provided query.');
+            return false;
         }
-        finally {
-            yield exports.client.close();
+        else {
+            return result.username;
         }
     });
 }
 exports.findUserByName = findUserByName;
+function deleteUser(username) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const database = exports.client.db('Location_Storage');
+        const userCollection = database.collection('User');
+        yield userCollection.deleteOne({ username: username });
+        console.log('Deleted ' + username + ' from database');
+    });
+}
+exports.deleteUser = deleteUser;
+function mongoDisconnect() {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield exports.client.close();
+        console.log('Disconnected from database');
+    });
+}
+exports.mongoDisconnect = mongoDisconnect;

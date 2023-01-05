@@ -15,70 +15,62 @@ export async function connect() {
 	
 		await client.db('admin').command({ ping: 1 })
 		console.log('Connected successfully to server')
-	} finally {
+	} catch {
 		await client.close()
 	}
 }
 
 export async function username( currentUsername: string ) {
-	try {
-		await client.connect()
 
-		const database = client.db('Location_Storage')
-		const userCollection = database.collection('User')
-		const result = await userCollection.insertOne({
-			username: currentUsername
-		})
+	const database = client.db('Location_Storage')
+	const userCollection = database.collection('User')
+	const result = await userCollection.insertOne({
+		username: currentUsername
+	})
 
-		console.log(`A document was inserted with the _id: ${result.insertedId}`)
-		return result.insertedId
-	} finally {
-		await client.close()
-	}
+	console.log(`A document was inserted with the _id: ${result.insertedId}`)
+	return result.insertedId
 }
 
 export async function findUserByID(usernameID: string){
 
-	try {
-		await client.connect()
+	const database = client.db('Location_Storage')
+	const userCollection = database.collection<User>('User')
+	const result = await userCollection.findOne<User>({ _id: usernameID })
+	
 
-		const database = client.db('Location_Storage')
-		const userCollection = database.collection<User>('User')
-		const result = await userCollection.findOne<User>({ _id: usernameID })
-		
-
-		if (result == null){
-			console.log('No document matches the provided query.')
-			return false
-		}
-		else{
-			return result.username
-		}
-	}finally {
-		await client.close()
+	if (result == null){
+		console.log('No document matches the provided query.')
+		return false
 	}
-
+	else{
+		return result.username
+	}
 }
 
 export async function findUserByName(username: string){
 
-	try {
-		await client.connect()
+	const database = client.db('Location_Storage')
+	const userCollection = database.collection<User>('User')
+	const result = await userCollection.findOne<User>({ username: username })
+	
 
-		const database = client.db('Location_Storage')
-		const userCollection = database.collection<User>('User')
-		const result = await userCollection.findOne<User>({ username: username })
-		
-
-		if (result == null){
-			console.log('No document matches the provided query.')
-			return false
-		}
-		else{
-			return result.username
-		}
-	}finally {
-		await client.close()
+	if (result == null){
+		console.log('No document matches the provided query.')
+		return false
 	}
+	else{
+		return result.username
+	}
+}
 
+export async function deleteUser(username: string) {
+	const database = client.db('Location_Storage')
+	const userCollection = database.collection('User')
+	await userCollection.deleteOne({ username: username })
+	console.log('Deleted ' + username + ' from database')
+}
+
+export async function mongoDisconnect() {
+	await client.close()
 }

@@ -1,3 +1,10 @@
+//Global variables
+let marker
+let newPos
+let map
+let userLine
+let username
+
 //Function for initialising the map
 function initMap() {
 
@@ -5,16 +12,54 @@ function initMap() {
 	const paris = {lat: 48.8566, lng: 2.3522};
 
 	// The map, centered at Paris
-	const map = new google.maps.Map(document.getElementById('map'), {
-		zoom: 8,
+	map = new google.maps.Map(document.getElementById('map'), {
+		zoom: 12,
 		center: paris,
 	});
 
 	// Adds marker position at Paris
-	const marker = new google.maps.Marker({
+	marker = new google.maps.Marker({
 		position: paris,
 		map: map,
 	});
+
+	// Adds user line
+	line = new google.maps.Polyline({
+		strokeColor: "#000000",
+		strokeOpacity: 1.0,
+		strokeWeight: 3,
+ 	});
+	line.setMap(map);
+
+	let infoWindow = new google.maps.InfoWindow();
+
+	// Open the InfoWindow on mouseover:
+	google.maps.event.addListener(line, 'mouseover', function() {
+		infoWindow.setPosition(newPos);
+		infoWindow.setContent(username + ' is on the move!');
+		infoWindow.open(map);
+	});
+	
+	// Close the InfoWindow on mouseout:
+	google.maps.event.addListener(line, 'mouseout', function() {
+		infoWindow.close();
+	});
+
+}	
+
+function liveMarker(lat, long) {
+	newPos = new google.maps.LatLng(lat, long)
+	marker.setPosition( newPos );
+	map.panTo( newPos );
+	map.setZoom(18)
+
+	
+	
+}
+
+function updateLine (lat, long) {
+	var path = line.getPath();
+	path.push(new google.maps.LatLng(lat, long));
 }
 
 //function for counting down an hour
@@ -46,9 +91,22 @@ function countDown() {
 }, 1000);
 }
 
+function getLocation() {
+	if (navigator.geolocation) {
+		(navigator.geolocation.getCurrentPosition(function(position){
+			console.log(position.coords.latitude, position.coords.longitude);
+			liveMarker(position.coords.latitude, position.coords.longitude);
+			updateLine(position.coords.latitude, position.coords.longitude);
+			setTimeout(getLocation, 1000);
+		})); 
+	} else {
+		console.log("Geolocation is not supported by this browser.");
+	}
+}
+
 $('#submit').click(() => {
 
-	var username = validation($('#username').val());
+	username = validation($('#username').val());
 
 	if (username == false) {
 		alert('Username is not valid');
@@ -59,7 +117,10 @@ $('#submit').click(() => {
 			alert(data);
 		});
 		$('#username').val('');
+		initMap();
 	}
+
+	getLocation();
 
 });
 
