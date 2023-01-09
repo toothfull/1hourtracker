@@ -1,7 +1,7 @@
 let webSocket;
 
 function connectToWebsocket ( username ) {
-	webSocket = new WebSocket('ws://localhost:1000/websocket');
+	webSocket = new WebSocket('ws://localhost:9000/websocket');
 	webSocket.onopen = function () {
 		console.log('Connected to websocket');
 		webSocket.send(username);

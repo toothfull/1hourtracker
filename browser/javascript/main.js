@@ -144,7 +144,7 @@ function updateServer (usernameID, lat, long, lineColour) {
 
 let linesForOfflineUsers = []
 function renderUserOffline (){
-	$.get("http://localhost:1000/offlineUsers", (data) => {
+	$.get("/offlineUsers", (data) => {
 		//console.dir(data)
 
 		for (let i = 0; i < data.length; i++){
@@ -204,7 +204,7 @@ $('#submit').click(() => {
 			
 		}
 		else {
-			$.post( "http://localhost:1000/username", { username: username, lineColour: lineColour }, function (data){
+			$.post( "/username", { username: username, lineColour: lineColour }, function (data){
 				connectToWebsocket( username );
 			});
 

@@ -42,7 +42,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const mongo_1 = require("./mongo");
 const validation_1 = require("./validation");
 exports.app = (0, express_1.default)();
-const port = 1000;
+const port = 9000;
 // parse application/x-www-form-urlencoded
 exports.app.use(body_parser_1.default.urlencoded({ extended: false }));
 // parse application/json
