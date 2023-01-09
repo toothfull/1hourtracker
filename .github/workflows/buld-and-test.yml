@@ -4,7 +4,8 @@ on:
   push:
     paths:
       - 'browser/**'
-      - '.github/workflows/test.yml'
+      - 'server/**'
+      - '.github/workflows/build-and-test.yml'
     branches:
       - '**'
 
@@ -13,7 +14,7 @@ env:
 
 jobs:
   build:
-    name: Build
+    name: Build Server
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -25,11 +26,14 @@ jobs:
         uses: actions/setup-node@v3
         with: 
           node-version: 18
-      
+
+      - name: Change directory
+        run: cd ./server/
+
       - name: Install Dependencies
         run: npm install
 
-      - name: Lint using ESlint
+      - name: Lint with ESlint
         run: npx eslint ./source/
 
       - name: Compile TypesScript
@@ -37,13 +41,13 @@ jobs:
 
       - name: Run Tests
         run: npm test
-      
+
       - name: Upload Code
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: |
-            ./emit
+            ./emit/
             package.json
             package-lock.json
 
@@ -59,9 +63,8 @@ jobs:
       - name: Validate
         uses: Cyb3r-Jak3/html5validator-action@master
         with:
-          root: ./browser
+          root: ./browser/
           css: true
-          blacklist: ./assets
       - name: Upload log
         uses: actions/upload-artifact@v3
         with:
