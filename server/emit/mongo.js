@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mongoDisconnect = exports.fetchOfflineUsers = exports.insertUserData = exports.deleteUser = exports.findUserByNameID = exports.findUserByName = exports.findUserByID = exports.username = exports.connect = exports.client = void 0;
+exports.mongoDisconnect = exports.liveUsers = exports.fetchOfflineUsers = exports.insertUserData = exports.deleteUser = exports.findUserByNameID = exports.doesUserExist = exports.findUserByID = exports.username = exports.connect = exports.client = void 0;
 const mongodb_1 = require("mongodb");
 const credentials_1 = require("./credentials");
 const uri = `${credentials_1.srv}://${credentials_1.userName}:${credentials_1.password}@${credentials_1.url}/${credentials_1.atlas}`;
@@ -45,7 +45,7 @@ function findUserByID(usernameID) {
     return __awaiter(this, void 0, void 0, function* () {
         const database = exports.client.db('Location_Storage');
         const userCollection = database.collection('User');
-        const result = yield userCollection.findOne({ _id: usernameID });
+        const result = yield userCollection.findOne({ _id: new mongodb_1.ObjectId(usernameID) });
         if (result == null) {
             console.log('No document matches the provided query.');
             return false;
@@ -56,7 +56,7 @@ function findUserByID(usernameID) {
     });
 }
 exports.findUserByID = findUserByID;
-function findUserByName(username) {
+function doesUserExist(username) {
     return __awaiter(this, void 0, void 0, function* () {
         const database = exports.client.db('Location_Storage');
         const userCollection = database.collection('User');
@@ -66,11 +66,11 @@ function findUserByName(username) {
             return false;
         }
         else {
-            return result.username;
+            return true;
         }
     });
 }
-exports.findUserByName = findUserByName;
+exports.doesUserExist = doesUserExist;
 function findUserByNameID(username) {
     return __awaiter(this, void 0, void 0, function* () {
         const database = exports.client.db('Location_Storage');
@@ -121,6 +121,42 @@ function fetchOfflineUsers() {
     });
 }
 exports.fetchOfflineUsers = fetchOfflineUsers;
+function liveUsers() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const database = exports.client.db('Location_Storage');
+        const userCollection = database.collection('User');
+        const usersData = yield userCollection.find({}).toArray();
+        const users = [];
+        for (let i = 0; i < usersData.length; i++) {
+            const user = usersData[i];
+            if (user.locations.length > 0) {
+                const latestLocation = user.locations[user.locations.length - 1];
+                // if the user has sent a location update within the last 10 minutes
+                if (latestLocation.timeStamp >= (new Date().getTime() - 600 * 1000)) {
+                    users.push({
+                        username: user.username,
+                        locations: user.locations,
+                        lineColour: user.lineColour,
+                        isOnline: true
+                    });
+                }
+                else {
+                    users.push({
+                        username: user.username,
+                        locations: user.locations,
+                        lineColour: user.lineColour,
+                        isOnline: false
+                    });
+                }
+            }
+            else {
+                console.log(user.username + ' has no location data');
+            }
+        }
+        return users;
+    });
+}
+exports.liveUsers = liveUsers;
 function mongoDisconnect() {
     return __awaiter(this, void 0, void 0, function* () {
         yield exports.client.close();

@@ -1,0 +1,52 @@
+name: TypeScript-1-Hour
+
+on: 
+  push:
+    paths:
+      - 'source/**'
+      - '.eslintrc.json'
+      - 'tsconfig.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/build.yml'
+    branches:
+      - '**'
+
+env: 
+  ARTIFACT_NAME: TypeScript-1-Hour-Tracker
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with: 
+          node-version: 18
+      
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Lint using ESlint
+        run: npx eslint ./source/
+
+      - name: Compile TypesScript
+        run: npx tsc
+
+      - name: Run Tests
+        run: npm test
+      
+      - name: Upload Code
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: |
+            ./emit
+            package.json
+            package-lock.json

@@ -142,6 +142,7 @@ function updateServer (usernameID, lat, long, lineColour) {
 	webSocket.send ( JSON.stringify(data) );
 };
 
+let linesForOfflineUsers = []
 function renderUserOffline (){
 	$.get("http://localhost:1000/offlineUsers", (data) => {
 		//console.dir(data)
@@ -150,37 +151,42 @@ function renderUserOffline (){
 			let user = data[i]
 			//console.log(user)
 
-			var lineForOfflineUser = new google.maps.Polyline({
+			let lineForOfflineUser = new google.maps.Polyline({
 				strokeColor: user.lineColour,
 				strokeOpacity: 1.0,
 				strokeWeight: 6,
 			});
 			lineForOfflineUser.setMap(map);
+			linesForOfflineUsers.push(lineForCurrentUser)
 
-			
 			let locationArray = user.locations
 			locationArray.sort((a,b) =>{
 				return a.timeStamp - b.timeStamp
 			})
 
-			var path = lineForOfflineUser.getPath();
+			let path = lineForOfflineUser.getPath();
 			for (let j = 0; j < locationArray.length; j++) {
 				path.push(new google.maps.LatLng(locationArray[j].lat, locationArray[j].long));
 			}
 
-			let lastpos = new google.maps.LatLng(locationArray[locationArray.length - 1].lat, locationArray[locationArray.length - 1].long)
+			if (locationArray.length > 0) {
+				let lastpos = new google.maps.LatLng(locationArray[locationArray.length - 1].lat, locationArray[locationArray.length - 1].long)
 
-			// Open the InfoWindow on mouseover:
-			google.maps.event.addListener(lineForOfflineUser, 'mouseover', function() {
-				infoWindow.setPosition(lastpos);
-				infoWindow.setContent(user.username + ' has taken a rest here!');
-				infoWindow.open(map);
-			});
-			
-			// Close the InfoWindow on mouseout:
-			google.maps.event.addListener(lineForOfflineUser, 'mouseout', function() {
-				infoWindow.close();
-			});
+				// Open the InfoWindow on mouseover:
+				google.maps.event.addListener(lineForOfflineUser, 'mouseover', function() {
+					infoWindow.setPosition(lastpos);
+					infoWindow.setContent(user.username + ' has taken a rest here!');
+					infoWindow.open(map);
+				});
+				
+				// Close the InfoWindow on mouseout:
+				google.maps.event.addListener(lineForOfflineUser, 'mouseout', function() {
+					infoWindow.close();
+				});
+			}
+			else {
+				alert ("No locations found for " + user.username)
+			}
 
 		}
 	})

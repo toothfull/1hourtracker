@@ -5,8 +5,16 @@ const uri = `${srv}://${userName}:${password}@${url}/${atlas}`
 
 export const client =	new MongoClient(uri)
 
-interface User extends WithId<Document> {
+export interface User extends WithId<Document> {
 	username: string
+	locations: locations[]
+	lineColour: string
+}
+
+interface locations {
+	lat: number
+	long: number
+	timeStamp: number
 }
 
 interface  userData {
@@ -46,7 +54,7 @@ export async function findUserByID(usernameID: string){
 
 	const database = client.db('Location_Storage')
 	const userCollection = database.collection<User>('User')
-	const result = await userCollection.findOne<User>({ _id: usernameID })
+	const result = await userCollection.findOne<User>({ _id: new ObjectId( usernameID ) })
 	
 
 	if (result == null){
@@ -58,7 +66,7 @@ export async function findUserByID(usernameID: string){
 	}
 }
 
-export async function findUserByName(username: string){
+export async function doesUserExist(username: string){
 
 	const database = client.db('Location_Storage')
 	const userCollection = database.collection<User>('User')
@@ -70,7 +78,7 @@ export async function findUserByName(username: string){
 		return false
 	}
 	else{
-		return result.username
+		return true
 	}
 }
 
@@ -123,6 +131,43 @@ export async function fetchOfflineUsers(){
 	const usersData = await userCollection.find({}).toArray()
 
 	return usersData
+}
+
+export async function liveUsers(){
+	const database = client.db('Location_Storage')
+	const userCollection = database.collection<User>('User')
+	const usersData = await userCollection.find({}).toArray()
+	const users = []
+
+	for (let i = 0; i < usersData.length; i++){
+		const user = usersData[i]
+		
+		if (user.locations.length > 0){
+			const latestLocation = user.locations[user.locations.length - 1]
+			
+			// if the user has sent a location update within the last 10 minutes
+			if (latestLocation.timeStamp >= (new Date().getTime() - 600 * 1000)) {
+				users.push({
+					username: user.username,
+					locations: user.locations,
+					lineColour: user.lineColour,
+					isOnline: true
+				})
+			}
+			else {
+				users.push({
+					username: user.username,
+					locations: user.locations,
+					lineColour: user.lineColour,
+					isOnline: false
+				})
+			}
+		}
+		else{
+			console.log(user.username + ' has no location data')
+		}	
+	}
+	return users
 }
 
 export async function mongoDisconnect() {

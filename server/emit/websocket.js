@@ -17,17 +17,31 @@ const ws_1 = __importDefault(require("ws"));
 const main_1 = require("./main");
 const mongo_1 = require("./mongo");
 exports.wsServer = new ws_1.default.Server({ server: main_1.webServer, path: '/websocket' });
+function broadcast(message) {
+    console.log('broadcasting to all clients:', message);
+    const connectedClients = Array.from(exports.wsServer.clients.values());
+    for (let i = 0; i < connectedClients.length; i++) {
+        const client = connectedClients[i];
+        client.send(message);
+    }
+}
 exports.wsServer.on('connection', (client) => {
     console.log('New connection!');
     client.on('message', (message) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log('Message recieved: ' + message);
+        console.log('Message recieved: ' + message.toString());
         const usernameID = yield (0, mongo_1.findUserByNameID)(message.toString());
+        // if location update is received
         try {
             const data = JSON.parse(message.toString());
             (0, mongo_1.insertUserData)(data);
+            // if username is received
         }
         catch (_a) {
             client.send(usernameID.toString());
         }
     }));
 });
+setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
+    const message = yield (0, mongo_1.liveUsers)();
+    broadcast(JSON.stringify(message));
+}), 15000);
