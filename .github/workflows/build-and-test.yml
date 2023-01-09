@@ -33,6 +33,15 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Create credentials file
+        run: |
+          touch ./typescript/credentials.ts
+          echo "export const srv = 'mongodb+srv'" >> ./typescript/credentials.ts
+          echo "export const userName = '${{ secrets.MONGO_USERNAME }}'" >> ./typescript/credentials.ts
+          echo "export const password = '${{ secrets.MONGO_PASSWORD }}'" >> ./typescript/credentials.ts
+          echo "export const url = '${{ secrets.MONGO_URL }}'" >> ./typescript/credentials.ts
+          echo "export const atlas = '${{ secrets.MONGO_ATLAS }}'" >> ./typescript/credentials.ts
+
       - name: Lint with ESlint
         run: npx eslint ./typescript/
 
