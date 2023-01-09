@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: read
+    defaults:
+      run:
+        working-directory: ./server/
     steps:
       - name: Clone repo
         uses: actions/checkout@v3
@@ -26,9 +29,6 @@ jobs:
         uses: actions/setup-node@v3
         with: 
           node-version: 18
-
-      - name: Change directory
-        run: cd ./server/
 
       - name: Install Dependencies
         run: npm install
@@ -47,9 +47,9 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: |
-            ./emit/
-            package.json
-            package-lock.json
+            ./server/emit/
+            ./server/package.json
+            ./server/package-lock.json
 
   test:
     name: Test
