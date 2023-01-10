@@ -23,26 +23,30 @@ suite ('Unit Testing', () => {
 	})
 
 	test('Find user by name', async () => {
-		const id = await username( 'test', '#ffffff' )
+		const id = await username( 'bob', '#ffffff' )
 		const nameInDb = await findUserByID(id.toString())
-		chai.assert.equal(nameInDb, 'test', 'name does not match whats in the database')
+		chai.assert.equal(nameInDb, 'bob', 'name does not match whats in the database')
 	})
 
 	test('Find user by id', async () => {
-		await username( 'test', '#ffffff' )
-		const id = await findUserByNameID('test')
+		await username( 'alice', '#ffffff' )
+		const id = await findUserByNameID('alice')
 
-		const database = client.db('Location_Storage')
-		const userCollection = database.collection<User>('User')
-		const result = await userCollection.findOne<User>({ username: username })
-
-		if (result == null){
-			console.log('No document matches the provided query.')
-		}
-		else{
-			console.log(id.toString() + ' 11111')
-			console.log(result._id.toString() + ' 11111')
-			chai.assert.equal(id.toString(), result._id.toString(), 'id does not match whats in the database')
+		if ( id != false ) {
+			const database = client.db('Location_Storage')
+			const userCollection = database.collection<User>('User')
+			const result = await userCollection.findOne<User>({ _id: new ObjectId( id ) })
+	
+			if (result == null){
+				console.log('No document matches the provided query.')
+			}
+			else{
+				console.log(id.toString() + ' 11111')
+				console.log(result._id.toString() + ' 11111')
+				chai.assert.equal(id.toString(), result._id.toString(), 'id does not match whats in the database')
+			}
+		} else {
+			console.log( 'no user found by id' )
 		}
 	})
 
@@ -146,11 +150,13 @@ suite ('Integration Testing', () => {
 					deleteUser('kyle_saffery').then(() => {
 						deleteUser('insertTest').then(() => {
 							deleteUser('red_bull').then(() => {
-								deleteUser('test').then(() => {
-									deleteUser('test1').then(() => {
-										webServer.close()
-										mongoDisconnect()
-										done()
+								deleteUser('bob').then(() => {
+									deleteUser('alice').then(() => {
+										deleteUser('test1').then(() => {
+											webServer.close()
+											mongoDisconnect()
+											done()
+										})
 									})
 								})
 							})

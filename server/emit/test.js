@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = __importDefault(require("chai"));
 const chai_http_1 = __importDefault(require("chai-http"));
+const mongodb_1 = require("mongodb");
 const main_1 = require("./main");
 const mongo_1 = require("./mongo");
 const validation_1 = require("./validation");
@@ -29,23 +30,28 @@ suite('Unit Testing', () => {
         done();
     });
     test('Find user by name', () => __awaiter(void 0, void 0, void 0, function* () {
-        const id = yield (0, mongo_1.username)('test', '#ffffff');
+        const id = yield (0, mongo_1.username)('bob', '#ffffff');
         const nameInDb = yield (0, mongo_1.findUserByID)(id.toString());
-        chai_1.default.assert.equal(nameInDb, 'test', 'name does not match whats in the database');
+        chai_1.default.assert.equal(nameInDb, 'bob', 'name does not match whats in the database');
     }));
     test('Find user by id', () => __awaiter(void 0, void 0, void 0, function* () {
-        yield (0, mongo_1.username)('test', '#ffffff');
-        const id = yield (0, mongo_1.findUserByNameID)('test');
-        const database = mongo_1.client.db('Location_Storage');
-        const userCollection = database.collection('User');
-        const result = yield userCollection.findOne({ username: mongo_1.username });
-        if (result == null) {
-            console.log('No document matches the provided query.');
+        yield (0, mongo_1.username)('alice', '#ffffff');
+        const id = yield (0, mongo_1.findUserByNameID)('alice');
+        if (id != false) {
+            const database = mongo_1.client.db('Location_Storage');
+            const userCollection = database.collection('User');
+            const result = yield userCollection.findOne({ _id: new mongodb_1.ObjectId(id) });
+            if (result == null) {
+                console.log('No document matches the provided query.');
+            }
+            else {
+                console.log(id.toString() + ' 11111');
+                console.log(result._id.toString() + ' 11111');
+                chai_1.default.assert.equal(id.toString(), result._id.toString(), 'id does not match whats in the database');
+            }
         }
         else {
-            console.log(id.toString() + ' 11111');
-            console.log(result._id.toString() + ' 11111');
-            chai_1.default.assert.equal(id.toString(), result._id.toString(), 'id does not match whats in the database');
+            console.log('no user found by id');
         }
     }));
     test('Does the user exist', () => __awaiter(void 0, void 0, void 0, function* () {
@@ -130,11 +136,13 @@ suite('Integration Testing', () => {
                     (0, mongo_1.deleteUser)('kyle_saffery').then(() => {
                         (0, mongo_1.deleteUser)('insertTest').then(() => {
                             (0, mongo_1.deleteUser)('red_bull').then(() => {
-                                (0, mongo_1.deleteUser)('test').then(() => {
-                                    (0, mongo_1.deleteUser)('test').then(() => {
-                                        main_1.webServer.close();
-                                        (0, mongo_1.mongoDisconnect)();
-                                        done();
+                                (0, mongo_1.deleteUser)('bob').then(() => {
+                                    (0, mongo_1.deleteUser)('alice').then(() => {
+                                        (0, mongo_1.deleteUser)('test1').then(() => {
+                                            main_1.webServer.close();
+                                            (0, mongo_1.mongoDisconnect)();
+                                            done();
+                                        });
                                     });
                                 });
                             });
