@@ -69,7 +69,8 @@ function randomColor() {
 function liveMarker(lat, long) {
 	console.log( 'liveMarker() called' )
 	newPos = new google.maps.LatLng(lat, long)
-	map.setZoom(18)
+	marker.setPosition( newPos );
+	//map.setZoom(18)
 }
 
 function updateLine(lat, long) {
@@ -113,7 +114,7 @@ function countDown() {
 function getLocation(usernameID) {
 	if (navigator.geolocation) {
 		(navigator.geolocation.getCurrentPosition(function(position){
-			map.panTo( new google.maps.LatLng(position.coords.latitude, position.coords.longitude) );
+			//map.panTo( new google.maps.LatLng(position.coords.latitude, position.coords.longitude) );
 			//Timer reaches 0
 
 			if (distance > 0) {
