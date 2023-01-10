@@ -88,7 +88,7 @@ jobs:
       contents: read
       packages: write
     env:
-      REGISTRY_NAME: ghcr.io
+      REGISTRY_NAME: gcr.io
     steps: 
     - name: Clone repo
       uses: actions/checkout@v3
@@ -105,15 +105,25 @@ jobs:
       with:
         platforms: linux/amd64
 
-    - name: Login to Docker
+    - name: Setup GCloud
+      uses: google-github-actions/setup-gcloud@v1
+
+    - name: Auth via GCloud
+      id: auth
+      uses: google-github-actions/auth@v1
+      with:
+       credentials_json: '${{ secrets.GCLOUD_CREDENTIALS }}'
+
+    - name: Setup GCloud with Docker
+      run: gcloud auth configure-docker
+
+    - name: Login to GCR
       uses: docker/login-action@v2
       with:
         registry: ${{ env.REGISTRY_NAME }}
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        username: _json_key
+        password: '${{ secrets.GCLOUD_CREDENTIALS }}'
     
-      
-          
     - name: Build Docker Image
       uses: docker/build-push-action@v3
       with:
@@ -121,7 +131,13 @@ jobs:
         context: ./
         tags: ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest
         push: true
-      
+
+    #- name: Deploy to GCloud
+    #  uses: google-github-actions/deploy-cloudrun@v1
+    #  with:
+    #    service: one-hour-tracker
+    #    image: ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest
+
     - name: Cleanup Docker Images
       uses: snok/container-retention-policy@v1
       with:

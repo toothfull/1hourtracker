@@ -1,7 +1,6 @@
 import chai from 'chai'
 import chaiHttp from 'chai-http'
-import mongo from 'mongodb'
-import { MongoClient, WithId, Document, ObjectId, } from 'mongodb'
+import { ObjectId } from 'mongodb'
 import { app, webServer } from './main'
 import { doesUserExist, deleteUser, mongoDisconnect, findUserByID, findUserByNameID, username, connect, client, User } from './mongo'
 import { validation } from './validation'
