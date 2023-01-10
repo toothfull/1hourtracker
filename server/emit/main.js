@@ -42,8 +42,14 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const mongo_1 = require("./mongo");
 const validation_1 = require("./validation");
 exports.app = (0, express_1.default)();
-const ip = '0.0.0.0';
-const port = 9000;
+let ip = '0.0.0.0';
+let port = 9000;
+if (process.env.EXPRESS_IP) {
+    ip = process.env.EXPRESS_IP;
+}
+if (process.env.EXPRESS_PORT) {
+    port = parseInt(process.env.EXPRESS_PORT);
+}
 // parse application/x-www-form-urlencoded
 exports.app.use(body_parser_1.default.urlencoded({ extended: false }));
 // parse application/json

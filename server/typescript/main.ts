@@ -7,8 +7,15 @@ import { validation } from './validation'
 
 
 export const app = express()
-const ip = '0.0.0.0'
-const port = 9000
+let ip = '0.0.0.0'
+let port = 9000
+
+if (process.env.EXPRESS_IP){
+	ip = process.env.EXPRESS_IP
+}
+if (process.env.EXPRESS_PORT){
+	port = parseInt(process.env.EXPRESS_PORT)
+}
 
 
 // parse application/x-www-form-urlencoded
