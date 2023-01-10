@@ -160,11 +160,17 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Deploy to Azure Container Instances
-      uses: azure/aci-deploy@v1
+    #- name: Deploy to Azure Container Instances
+    #  uses: azure/aci-deploy@v1
+    #  with:
+    #    resource-group: one-hour-tracker
+    #    dns-name-label: one-hour-tracker
+    #    image: ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest
+    #    name: one-hour-tracker
+    #    location: uksouth
+
+    - name: Restart Container
+      uses: azure/cli@v1
       with:
-        resource-group: one-hour-tracker
-        dns-name-label: one-hour-tracker
-        image: ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest
-        name: one-hour-tracker
-        location: uksouth
+        inlineScript: |
+          az container restart --name one-hour-tracker --resource-group one-hour-tracker
