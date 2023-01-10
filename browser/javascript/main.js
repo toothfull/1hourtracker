@@ -157,7 +157,7 @@ function renderUserOffline (){
 				strokeWeight: 6,
 			});
 			lineForOfflineUser.setMap(map);
-			linesForOfflineUsers.push(lineForCurrentUser)
+			linesForOfflineUsers.push(lineForOfflineUser)
 
 			let locationArray = user.locations
 			locationArray.sort((a,b) =>{

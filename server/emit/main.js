@@ -42,6 +42,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const mongo_1 = require("./mongo");
 const validation_1 = require("./validation");
 exports.app = (0, express_1.default)();
+const ip = '0.0.0.0';
 const port = 9000;
 // parse application/x-www-form-urlencoded
 exports.app.use(body_parser_1.default.urlencoded({ extended: false }));
@@ -65,8 +66,8 @@ exports.app.get('/offlineUsers', (req, res) => __awaiter(void 0, void 0, void 0,
     const offlineUsers = yield (0, mongo_1.fetchOfflineUsers)();
     res.send(offlineUsers);
 }));
-exports.webServer = exports.app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(`Example app listening at http://localhost:${port}`);
+exports.webServer = exports.app.listen(port, ip, () => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(`Example app listening at http://${ip}:${port}`);
     yield (0, mongo_1.connect)();
     yield Promise.resolve().then(() => __importStar(require('./websocket')));
 }));

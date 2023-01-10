@@ -1,7 +1,12 @@
 let webSocket;
 
 function connectToWebsocket ( username ) {
-	webSocket = new WebSocket('ws://localhost:9000/websocket');
+	let scheme = 'ws:'
+	if (window.location.protocol == 'https:') {
+		scheme = 'wss:'
+	}
+	const hostname = window.location.host
+	webSocket = new WebSocket(`${scheme}//${hostname}/websocket`);
 	webSocket.onopen = function () {
 		console.log('Connected to websocket');
 		webSocket.send(username);

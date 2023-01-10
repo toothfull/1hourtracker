@@ -7,6 +7,7 @@ import { validation } from './validation'
 
 
 export const app = express()
+const ip = '0.0.0.0'
 const port = 9000
 
 
@@ -38,12 +39,8 @@ app.get('/offlineUsers', async (req,res) => {
 	res.send(offlineUsers)
 })
 
-export const webServer = app.listen(port, async () => {
-	console.log(`Example app listening at http://localhost:${port}`)
+export const webServer = app.listen(port, ip, async () => {
+	console.log(`Example app listening at http://${ip}:${port}`)
 	await connect()
 	await import('./websocket')
 })
-
-
-
-

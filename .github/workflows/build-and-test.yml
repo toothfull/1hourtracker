@@ -154,3 +154,17 @@ jobs:
     #    untagged-only: true
     #    account-type: personal
     #    token: ${{ secrets.PERSONAL_ACCESS_TOKEN_PACKAGES }}
+
+    - name: Login via Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy to Azure Container Instances
+      uses: azure/aci-deploy@v1
+      with:
+        resource-group: one-hour-tracker
+        dns-name-label: one-hour-tracker
+        image: ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest
+        name: one-hour-tracker
+        location: 'south uk'
