@@ -167,4 +167,4 @@ jobs:
         dns-name-label: one-hour-tracker
         image: ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest
         name: one-hour-tracker
-        location: 'south uk'
+        location: uksouth
