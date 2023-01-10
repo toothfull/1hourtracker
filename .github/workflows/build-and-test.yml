@@ -125,13 +125,16 @@ jobs:
     #    username: oauth2accesstoken
     #    password: ${{ steps.auth.outputs.access_token }}
 
+    #- name: Build Docker Image
+    #  uses: docker/build-push-action@v3
+    #  with:
+    #    file: ./Dockerfile
+    #    context: ./
+    #    tags: ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest
+    #ß    push: false
+
     - name: Build Docker Image
-      uses: docker/build-push-action@v3
-      with:
-        file: ./Dockerfile
-        context: ./
-        tags: ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest
-        push: false
+      run: docker image build -t ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest -f ./Dockerfile ./
 
     - name: Push to GCR
       run: docker image push ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest
@@ -142,12 +145,12 @@ jobs:
     #    service: one-hour-tracker
     #    image: ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest
 
-    - name: Cleanup Docker Images
-      uses: snok/container-retention-policy@v1
-      with:
-        image-names: 1hourtracker
-        cut-off: 0 seconds ago UTC
-        keep-at-least: 1
-        untagged-only: true
-        account-type: personal
-        token: ${{ secrets.PERSONAL_ACCESS_TOKEN_PACKAGES }}
+    #- name: Cleanup Docker Images
+    #  uses: snok/container-retention-policy@v1
+    #  with:
+    #    image-names: 1hourtracker
+    #    cut-off: 0 seconds ago UTC
+    #    keep-at-least: 1
+    #    untagged-only: true
+    #    account-type: personal
+    #    token: ${{ secrets.PERSONAL_ACCESS_TOKEN_PACKAGES }}
