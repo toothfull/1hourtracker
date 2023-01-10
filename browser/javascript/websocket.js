@@ -10,7 +10,21 @@ function connectToWebsocket ( username ) {
 	webSocket.onopen = function () {
 		console.log('Connected to websocket');
 		webSocket.send(username);
+	}
+	webSocket.onclose = function() {
+		console.log('Disconnected from websocket');
 		
+		webSocket = undefined
+		console.log('reconnecting to websocket')
+		connectToWebsocket(username)
+		
+	}
+	webSocket.onerror = function( error ){
+		console.log(error)
+
+		webSocket = undefined
+		console.log('reconnecting to websocket')
+		connectToWebsocket(username)
 	}
 	webSocket.onmessage = function (event) {
 		console.log(event.data + ' received');
