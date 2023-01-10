@@ -13,6 +13,8 @@ COPY ./browser/ /app/browser/
 # Install node packages
 RUN npm install
 
+EXPOSE 80 9000
+
 # Define Start Command
 ENTRYPOINT [ "node" ]
 CMD [ "/app/server/" ]
