@@ -10,7 +10,13 @@ function connectToWebsocket ( username ) {
 	webSocket = new WebSocket(`${scheme}//${hostname}/websocket`);
 	webSocket.onopen = function () {
 		console.log('Connected to websocket');
-		webSocket.send(username);
+		try {
+			webSocket.send(username);
+		}
+		catch (error){
+			console.log( 'Unable to connect to websocket... Location ignored!!!!' )
+		}
+		
 	}
 	webSocket.onclose = function() {
 		console.log('Disconnected from websocket');
