@@ -69,7 +69,6 @@ function randomColor() {
 function liveMarker(lat, long) {
 	console.log( 'liveMarker() called' )
 	newPos = new google.maps.LatLng(lat, long)
-	marker.setPosition( newPos );
 	map.setZoom(18)
 }
 
