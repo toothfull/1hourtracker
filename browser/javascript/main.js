@@ -139,7 +139,12 @@ function updateServer (usernameID, lat, long, lineColour) {
 		lineColour: lineColour,
 		timeStamp: new Date().getTime()
 	}	
-	webSocket.send ( JSON.stringify(data) );
+	try {
+		webSocket.send ( JSON.stringify(data) );
+	}
+	catch (error) {
+		console.log( 'Unable to connect to websocket... Location ignored!!!!' )
+	}
 };
 
 let linesForOfflineUsers = []
