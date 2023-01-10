@@ -89,11 +89,10 @@ jobs:
       contents: read
       packages: write
     env:
-      REGISTRY_NAME: gcr.io
+      REGISTRY_NAME: ghcr.io
     steps: 
     - name: Clone repo
       uses: actions/checkout@v3
-
 
     - name: Download Code
       uses: actions/download-artifact@v3
@@ -106,38 +105,39 @@ jobs:
       with:
         platforms: linux/amd64
 
-    - name: Setup GCloud
-      uses: google-github-actions/setup-gcloud@v1
+    #- name: Setup GCloud
+    #  uses: google-github-actions/setup-gcloud@v1
 
-    - name: Auth via GCloud
-      id: auth
-      uses: google-github-actions/auth@v1
+    #- name: Auth via GCloud
+    #  id: auth
+    #  uses: google-github-actions/auth@v1
+    #  with:
+    #    credentials_json: '${{ secrets.GCLOUD_CREDENTIALS }}'
+
+    #- name: Setup GCloud with Docker
+    #  run: |
+    #    gcloud auth configure-docker
+
+    - name: Login to Docker
+      uses: docker/login-action@v2
       with:
-        credentials_json: '${{ secrets.GCLOUD_CREDENTIALS }}'
-
-    - name: Setup GCloud with Docker
-      run: gcloud auth configure-docker
-
-    #- name: Login to GCR
-    #  uses: docker/login-action@v2
-    #  with:
-    #    registry: ${{ env.REGISTRY_NAME }}
-    #    username: oauth2accesstoken
-    #    password: ${{ steps.auth.outputs.access_token }}
-
-    #- name: Build Docker Image
-    #  uses: docker/build-push-action@v3
-    #  with:
-    #    file: ./Dockerfile
-    #    context: ./
-    #    tags: ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest
-    #ß    push: false
+        registry: ${{ env.REGISTRY_NAME }}
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build Docker Image
-      run: docker image build -t ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest -f ./Dockerfile ./
+      uses: docker/build-push-action@v3
+      with:
+        file: ./Dockerfile
+        context: ./
+        tags: ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest
+        push: true
 
-    - name: Push to GCR
-      run: docker image push ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest
+    #- name: Build Docker Image
+    #  run: docker image build -t ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest -f ./Dockerfile ./
+
+    #- name: Push to GCR
+    #  run: docker image push ${{ env.REGISTRY_NAME }}/${{ github.repository_owner }}/1hourtracker:latest
 
     #- name: Deploy to GCloud
     #  uses: google-github-actions/deploy-cloudrun@v1
