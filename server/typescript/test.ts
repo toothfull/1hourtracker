@@ -147,7 +147,7 @@ suite ('Integration Testing', () => {
 						deleteUser('insertTest').then(() => {
 							deleteUser('red_bull').then(() => {
 								deleteUser('test').then(() => {
-									deleteUser('test').then(() => {
+									deleteUser('test1').then(() => {
 										webServer.close()
 										mongoDisconnect()
 										done()
