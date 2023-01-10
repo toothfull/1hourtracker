@@ -6,6 +6,7 @@ on:
       - 'browser/**'
       - 'server/**'
       - '.github/workflows/build-and-test.yml'
+      - 'Dockerfile'
     branches:
       - '**'
 
