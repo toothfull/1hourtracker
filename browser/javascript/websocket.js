@@ -1,4 +1,5 @@
 let webSocket;
+let hasWebSocketStarted = false
 
 function connectToWebsocket ( username ) {
 	let scheme = 'ws:'
@@ -37,9 +38,13 @@ function connectToWebsocket ( username ) {
 
 		// failed, must be username is recieved
 		} catch {
-			const usernameID = event.data;
-			countDown();
-			getLocation(usernameID);
+			if (hasWebSocketStarted == false){
+				hasWebSocketStarted = true
+			  
+				const usernameID = event.data;
+				countDown()
+				getLocation(usernameID)
+			  }
 		}
 
 		// if location update is recieved
