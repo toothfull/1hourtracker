@@ -5,7 +5,7 @@ import { username, connect, fetchOfflineUsers } from './mongo'
 import { validation } from './validation'
 
 
-
+//express details
 export const app = express()
 let ip = '0.0.0.0'
 let port = 9000
@@ -24,8 +24,10 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+//Provide browser files to the client
 app.use(express.static('../browser'))
  
+//Username post
 app.post('/username', async (req, res) => {
 	const usernameRecieved = req.body.username
 	const lineColourRecieved = req.body.lineColour
@@ -41,11 +43,13 @@ app.post('/username', async (req, res) => {
 	}
 })
 
+//Offline users get
 app.get('/offlineUsers', async (req,res) => {
 	const offlineUsers = await fetchOfflineUsers()
 	res.send(offlineUsers)
 })
 
+//Webserver
 export const webServer = app.listen(port, ip, async () => {
 	console.log(`Example app listening at http://${ip}:${port}`)
 	await connect()

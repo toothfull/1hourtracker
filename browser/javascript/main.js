@@ -8,6 +8,7 @@ let username // name of CURRENT user
 let distance = 1 // time until stopwatch ends
 let hasStarted = false // have we started the session yet?
 let lineColour = randomColor() // random color for the CURRENT user's line
+let linesForOfflineUsers = [] // array of lines for offline users	
 
 
 //Function for initialising the map
@@ -131,6 +132,7 @@ function getLocation(usernameID) {
 	}
 }
 
+//Updates the server our location via websocket
 function updateServer (usernameID, lat, long, lineColour) {
 	const data = {
 		usernameID: usernameID,
@@ -147,7 +149,7 @@ function updateServer (usernameID, lat, long, lineColour) {
 	}
 };
 
-let linesForOfflineUsers = []
+//Draws offline users from the servers responce
 function renderUserOffline (){
 	$.get("/offlineUsers", (data) => {
 		//console.dir(data)
@@ -197,6 +199,7 @@ function renderUserOffline (){
 	})
 }
 
+//submit button
 $('#submit').click(() => {
 	if (hasStarted == false) {
 		hasStarted = true;
@@ -222,6 +225,7 @@ $('#submit').click(() => {
 
 });
 
+//Location button
 $('#myLocation').click(() => {
 	navigator.geolocation.getCurrentPosition(function(position){
 		map.panTo(new google.maps.LatLng(position.coords.latitude, position.coords.longitude))
@@ -230,6 +234,7 @@ $('#myLocation').click(() => {
 	
 });
 
+//On load
 window.onload = function() {
 	initMap();
 	renderUserOffline();

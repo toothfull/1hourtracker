@@ -1,22 +1,25 @@
 import { MongoClient, WithId, Document, ObjectId } from 'mongodb'
 import { srv, userName, password, url, atlas } from './credentials'
 
+//Collects mongoDB login details and creates a new connection
 const uri = `${srv}://${userName}:${password}@${url}/${atlas}`
-
 export const client =	new MongoClient(uri)
 
+//User interface
 export interface User extends WithId<Document> {
 	username: string
 	locations: locations[]
 	lineColour: string
 }
 
+//Locations interface
 interface locations {
 	lat: number
 	long: number
 	timeStamp: number
 }
 
+//User data interface
 interface  userData {
 	usernameID: string
 	lat: number
@@ -25,6 +28,7 @@ interface  userData {
 	timeStamp: number
 }
 
+//Initial connect function
 export async function connect() {
 	try{
 		await client.connect()
@@ -36,6 +40,7 @@ export async function connect() {
 	}
 }
 
+//Create new username document in users collection
 export async function username( currentUsername: string, lineColour: string) {
 
 	const database = client.db('Location_Storage')
@@ -50,6 +55,7 @@ export async function username( currentUsername: string, lineColour: string) {
 	return result.insertedId
 }
 
+//Finds a username be ID
 export async function findUserByID(usernameID: string){
 
 	const database = client.db('Location_Storage')
@@ -66,13 +72,14 @@ export async function findUserByID(usernameID: string){
 	}
 }
 
+//Checks to see if user exists
 export async function doesUserExist(username: string){
 
 	const database = client.db('Location_Storage')
 	const userCollection = database.collection<User>('User')
 	const result = await userCollection.findOne<User>({ username: username })
 	
-
+	
 	if (result == null){
 		console.log('No document matches the provided query.')
 		return false
@@ -82,6 +89,7 @@ export async function doesUserExist(username: string){
 	}
 }
 
+//Find a users ID by name
 export async function findUserByNameID(username: string){
 
 	const database = client.db('Location_Storage')
@@ -98,6 +106,7 @@ export async function findUserByNameID(username: string){
 	}
 }
 
+//Delete user from collection
 export async function deleteUser(username: string) {
 	const database = client.db('Location_Storage')
 	const userCollection = database.collection('User')
@@ -105,6 +114,7 @@ export async function deleteUser(username: string) {
 	console.log('Deleted ' + username + ' from database')
 }
 
+//Add a user's location & line data to their document
 export async function insertUserData(data: userData) {
 	const database = client.db('Location_Storage')
 	const userCollection = database.collection('User')
@@ -125,6 +135,7 @@ export async function insertUserData(data: userData) {
 
 }
 
+//Fetch a list of all users
 export async function fetchOfflineUsers(){
 	const database = client.db('Location_Storage')
 	const userCollection = database.collection('User')
@@ -133,6 +144,7 @@ export async function fetchOfflineUsers(){
 	return usersData
 }
 
+//Fetch a list of users an determine if they're online or not
 export async function liveUsers(){
 	const database = client.db('Location_Storage')
 	const userCollection = database.collection<User>('User')
@@ -170,6 +182,7 @@ export async function liveUsers(){
 	return users
 }
 
+//Disconnect from mongoDB
 export async function mongoDisconnect() {
 	await client.close()
 }

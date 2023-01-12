@@ -1,5 +1,6 @@
 export function validation (username: string) {
 	
+	//Regex
 	const regex = new RegExp (/^[_\w]{3,15}$/)
 
 	if (username.length < 3) {

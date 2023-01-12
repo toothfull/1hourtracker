@@ -1,5 +1,6 @@
 function validation (username) {
 
+	//regex
 	var regex = new RegExp (/^[_\w]{3,15}$/)
 
 	if (username.length < 3) {

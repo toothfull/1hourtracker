@@ -1,6 +1,8 @@
 let webSocket;
 let hasWebSocketStarted = false
 
+
+//Connect to websocket
 function connectToWebsocket ( username ) {
 	let scheme = 'ws:'
 	if (window.location.protocol == 'https:') {
